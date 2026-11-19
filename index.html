@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inglés II – Práctica</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE: juguetón pero claro, como un cuaderno de práctica con alma de cartucho de juego
+   IDEA: cada sección es un "nivel" con su botón de corregir y XP que se suma
+   PICTURE: los ejercicios mismos, con la barra de XP del encabezado como HUD
+   COLOUR and TYPE: amarillo de etiqueta de cartucho + tinta negra, verde/rojo para el feedback; Rubik + Press Start 2P para el HUD
+   LAYOUT: una columna tranquila de ≤760px, pestañas de unidades arriba, secciones apiladas */
+:root{color-scheme:light dark;--bg:light-dark(#fbfaf6,#141318);--ink:light-dark(#17161c,#efedf4);--mut:light-dark(#5d5a66,#a9a5b4);--card:light-dark(#fff,#1d1c23);--line:light-dark(#e3e0d8,#2e2c36);--y:#ffcf3a;--ok:light-dark(#127a45,#4fd38c);--okb:light-dark(#e3f6eb,#11301f);--bad:light-dark(#c2342b,#ff7a70);--badb:light-dark(#fde8e6,#3a1a18);--acc:light-dark(#2f4bd8,#8ea0ff)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Rubik,system-ui,sans-serif;overflow-x:clip}
+header{background:var(--y);color:#17161c;padding:28px max(5vw,16px) 0}
+.wrap{max-width:760px;margin:0 auto}
+.px{font-family:"Press Start 2P",monospace;font-size:13px;line-height:1.6}
+h1{font-size:clamp(30px,5vw,44px);line-height:1.05;margin:10px 0 6px;font-weight:800;text-wrap:balance}
+.sub{margin:0 0 18px;max-width:60ch}
+.hud{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+.bar{flex:1 1 220px;height:18px;background:#17161c;border-radius:4px;padding:3px}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#4fd38c,#9ff0c3);border-radius:2px;transition:width .5s}
+@media(prefers-reduced-motion:reduce){.bar i{transition:none}}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:0}
+.tabs button{flex:none;font:500 15px Rubik,sans-serif;border:0;border-radius:8px 8px 0 0;padding:10px 14px;min-height:44px;background:rgba(23,22,28,.12);color:#17161c;cursor:pointer}
+.tabs button[aria-selected=true]{background:var(--bg);color:var(--ink);font-weight:700}
+.tabs button:disabled{opacity:.5;cursor:not-allowed}
+main{padding:24px max(5vw,16px) 64px}
+.tip{border-left:4px solid var(--y);background:var(--card);padding:14px 16px;border-radius:0 10px 10px 0;margin:0 0 28px}
+.tip b{font-weight:700}
+.tip code{font:500 15px Rubik;background:light-dark(#fff3c4,#3a3110);padding:1px 6px;border-radius:4px}
+section{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px clamp(14px,3vw,24px);margin-bottom:22px}
+h2{font-size:22px;line-height:1.2;margin:0 0 4px}
+.ins{color:var(--mut);margin:0 0 14px}
+ol{margin:0;padding-left:1.6em}
+li{padding:10px 0;border-top:1px solid var(--line)}
+li:first-child{border-top:0}
+.q{margin-bottom:8px}
+input[type=text],select{font:16px Rubik,sans-serif;width:100%;padding:10px 12px;min-height:44px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+select{width:auto;min-width:110px}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.inline{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ch{display:flex;gap:8px;flex-wrap:wrap}
+.ch button{font:500 15px Rubik;min-height:44px;padding:8px 14px;border-radius:8px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;text-align:left}
+.ch button.on{border-color:var(--acc);background:light-dark(#e9edff,#232a52)}
+.fix{margin-top:8px}
+.fb{margin-top:8px;padding:8px 12px;border-radius:8px;font-size:15px;display:none}
+.fb.ok{display:block;background:var(--okb);color:var(--ok)}
+.fb.bad{display:block;background:var(--badb);color:var(--bad)}
+.acts{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;align-items:center}
+.btn{font:700 15px Rubik;min-height:44px;padding:10px 18px;border-radius:10px;border:0;background:#17161c;color:#ffcf3a;cursor:pointer}
+:root[data-theme=dark] .btn{background:var(--y);color:#17161c}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]) .btn{background:var(--y);color:#17161c}}
+.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+:root .ghost{background:transparent!important;color:var(--ink)!important}
+.score{font-weight:700}
+u{text-decoration-thickness:2px;text-underline-offset:3px;text-decoration-color:var(--acc)}
+.card{border:1px dashed var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px}
+details summary{cursor:pointer;color:var(--acc);font-weight:500;min-height:32px;padding-top:6px}
+.m{color:var(--mut)}
+.note{font-size:14px;color:var(--mut);margin-top:22px}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div class="px">INGLÉS II · RENDIR LIBRE</div>
+  <h1 id="ttl">Unit 1 · Making questions</h1>
+  <p class="sub">Completá, apretá <b>Corregir</b> en cada nivel y mirá la respuesta modelo si le pifiás. Tu progreso se guarda solo.</p>
+  <div class="hud"><span class="px" id="xp">XP 0 / 0</span><div class="bar"><i id="xpb"></i></div><span id="st" style="font-size:14px;font-weight:500">Conectando…</span></div>
+  <nav class="tabs" id="tabs" role="tablist"></nav>
+</div></header>
+
+<main><div class="wrap">
+  <div class="tip" id="tip"></div>
+  <div id="app"></div>
+  <p class="note" id="nt"></p>
+</div></main>
+
+<script>
+{
+/* ================= DATOS POR UNIDAD =================
+   tipos de sección: ci = correcta/incorrecta + corrección · txt = escribir · mc = elegir opción · sel = desplegable · oral */
+const UNITS={
+1:{tab:'1 · Questions',title:'Unit 1 · Making questions',
+ tip:`<b>Regla de oro:</b> <code>Question word + Auxiliar + Sujeto + Verbo + resto?</code> → <i>Where <b>do</b> you live?</i> · <i>What <b>did</b> she play?</i> · <i>Why <b>is</b> he leaving?</i><br><b>Excepción:</b> si preguntás por el <b>sujeto</b>, no va auxiliar → <i>Who <b>won</b> the match?</i> (no <i>Who did win</i>).<br><b>Ojo:</b> después de <i>does/did</i> el verbo va pelado → <i>Where does he <b>go</b>?</i> (no <i>goes</i>).`,
+ note:'Basado en Unit 1 de la cátedra: question forms, trivia questions, entrevista a un gamer.',
+ secs:[
+ {id:'a',t:'ci',title:'Nivel 1 · ¿Correcta o incorrecta?',ins:'Marcá si la pregunta está bien. Si está mal, escribila corregida.',items:[
+  ["You like RPG games?",false,"Do you like RPG games?"],["Is it an open-world game?",true],["Does it have multiplayer?",true],
+  ["Where the character goes?",false,"Where does the character go?"],["When you play this game?",false,"When do you play this game?",["When did you play this game?"]],
+  ["Was it released after 2015?",true],["Who did create Minecraft?",false,"Who created Minecraft?"],["How often does she streams?",false,"How often does she stream?"],
+  ["What platform did you play it on?",true],["Which character you prefer?",false,"Which character do you prefer?"]]},
+ {id:'b',t:'txt',title:'Nivel 2 · Armá la pregunta',ins:'Usá las pistas para escribir la pregunta completa (cuidado con el tiempo verbal).',items:[
+  ["Where / you / from?",["Where are you from?"]],["Why / you / decide / to study this career? (pasado)",["Why did you decide to study this career?"]],
+  ["Who / you / know / in the class?",["Who do you know in the class?"]],["How many / foreign students / there / in the class?",["How many foreign students are there in the class?","How many foreign students are in the class?"]],
+  ["How often / you / play / your favourite videogame?",["How often do you play your favourite videogame?"]],["What subjects / you / take / last year?",["What subjects did you take last year?","What subjects did you have last year?"]],
+  ["What subjects / you / take / this year? (ahora)",["What subjects are you taking this year?","What subjects do you take this year?"]],["When / your favourite game / come out?",["When did your favourite game come out?"]]]},
+ {id:'c',t:'txt',title:'Nivel 3 · Preguntá por lo subrayado',ins:'Escribí la pregunta cuya respuesta es la parte subrayada.',items:[
+  ["<u>Lionel's</u> controller is broken.",["Whose controller is broken?"]],["The tournament starts <u>at 8 pm</u>.",["What time does the tournament start?","When does the tournament start?"]],
+  ["She streams <u>three times a week</u>.",["How often does she stream?","How many times a week does she stream?","How many times does she stream a week?"]],
+  ["<u>Hideo Kojima</u> directed Metal Gear Solid.",["Who directed Metal Gear Solid?"]],["I bought <u>the red</u> skin.",["Which skin did you buy?"]],
+  ["The new console costs <u>$500</u>.",["How much does the new console cost?","How much is the new console?"]],
+  ["They're playing <u>Elden Ring</u> right now.",["What are they playing right now?","What are they playing?","What game are they playing right now?","What game are they playing?"]],
+  ["He quit the game <u>because it was too hard</u>.",["Why did he quit the game?"]],["We met <u>in Buenos Aires</u>.",["Where did you meet?"]],
+  ["The game was released <u>in 2017</u>.",["When was the game released?","What year was the game released?","Which year was the game released?","What year was the game released in?"]]]},
+ {id:'d',t:'mc',title:'Nivel 4 · ¿Sujeto u objeto?',ins:'Elegí la pregunta correcta. Si preguntás por el sujeto, va sin auxiliar.',items:[
+  ["<i>Messi beat France.</i> Preguntá por el que ganó:",["Who beat France?","Who did beat France?"],0],["<i>Messi beat France.</i> Preguntá por el que perdió:",["Who Messi beat?","Who did Messi beat?"],1],
+  ["<i>Nintendo made Zelda.</i> Preguntá por la empresa:",["Who did make Zelda?","Who made Zelda?"],1],["<i>Nintendo made Zelda.</i> Preguntá por el juego:",["What did Nintendo make?","What Nintendo made?"],0],
+  ["<i>Valkyrae plays Valorant.</i> Preguntá por el juego:",["What plays Valkyrae?","What does Valkyrae play?"],1],["<i>A bug crashed the server.</i> Preguntá por la causa:",["What crashed the server?","What did crash the server?"],0]]},
+ {id:'e',t:'sel',opts:["—","do","does","did","is","are","was","were","can"],title:'Nivel 5 · Completá el auxiliar',ins:'Elegí el auxiliar que falta. "—" significa que no va ninguno.',items:[
+  ["___ you play online yesterday?","did"],["Where ___ your brother work?","does"],["What ___ you doing right now?","are"],["___ the game have a multiplayer mode?","does"],
+  ["___ the servers down last night?","were"],["How long ___ it take you to finish the game last week?","did"],["___ your sister like horror games?","does"],
+  ["Who ___ won the tournament last year? <span class='m'>(ojo)</span>","—","Pregunta por el sujeto: <b>Who won…?</b>"],["___ your character jump twice? — Yes, it has a double jump.","can"],["___ she streaming now?","is"]]},
+ {id:'f',t:'oral',title:'Bonus oral · Interview a gamer',ins:'Respondé en voz alta con 2–3 oraciones completas. Después mirá el ejemplo y adaptalo a vos.',items:[
+  ["Where are you from?","I'm from Buenos Aires, Argentina. I live in … with my family."],["Why did you decide to study this career?","I decided to study game development because I love games and I want to create my own."],
+  ["What's your favourite videogame? Why?","My favourite game is Hollow Knight because the world is huge and the art is beautiful."],["How often do you play videogames?","I play almost every day, usually at night after I study."],
+  ["What are you working on this semester?","This semester I'm working on a 2D game in Unity for one of my courses."],["What did you play last weekend?","Last weekend I played … with some friends online."]]}]},
+
+2:{tab:'2 · Present',title:'Unit 2 · Present simple vs continuous',
+ tip:`<b>Present simple</b> → hábitos, rutinas, hechos, historias de juegos: <i>She <b>plays</b> every day.</i> · <i>The game <b>takes</b> place in Neo-Tokyo.</i> (<i>usually, always, every day, once a week, never</i>)<br>
+ <b>Present continuous</b> → lo que pasa ahora o en este período, y planes ya arreglados: <i>Nova <b>is escaping</b> from a drone.</i> · <i>We<b>'re working</b> on the levels this week.</i> (<i>now, right now, at the moment, currently, these days, Look!</i>)<br>
+ <b>Stative verbs</b> no van en continuo: <i>know, want, need, like, love, hate, believe, understand, belong, mean, prefer, seem</i>.<br>
+ <b>Cambian de significado:</b> <i>I <b>think</b> it's good</i> (opino) / <i>I'm <b>thinking</b> about it</i> (lo pienso) · <i>I <b>have</b> a car</i> / <i>I'm <b>having</b> lunch</i> · <i>It <b>tastes</b> great</i> / <i>The chef is <b>tasting</b> it</i> · <i>You <b>are</b> silly</i> (siempre) / <i>You're <b>being</b> silly</i> (ahora).`,
+ note:'Basado en Unit 2 de la cátedra: present simple vs continuous, stative verbs, Shadow Circuit y la presentación de tu proyecto.',
+ secs:[
+ {id:'a',t:'mc',title:'Nivel 1 · Elegí la forma correcta',ins:'Simple o continuo: mirá las pistas de tiempo y si el verbo es stative.',items:[
+  ["I ___ Unity for most of my projects.",["use","am using"],0],["Look! The boss ___ its second phase.",["starts","is starting"],1],
+  ["I ___ what you mean.",["understand","am understanding"],0],["This week we ___ on the level design.",["work","are working"],1],
+  ["Nova ___ anyone.",["doesn't trust","isn't trusting"],0],["The game ___ place in Neo-Tokyo.",["takes","is taking"],0],
+  ["Shh! I ___ to the trailer.",["listen","am listening"],1],["This soup ___ amazing.",["tastes","is tasting"],0],
+  ["The chef ___ the soup right now.",["tastes","is tasting"],1],["You ___ so annoying today! Stop it.",["are","are being"],1],
+  ["I ___ a new laptop, mine is ancient.",["need","am needing"],0],["My brother ___ a lot of horror games. He loves them.",["plays","is playing"],0],
+  ["What ___ about? You look worried.",["do you think","are you thinking"],1],["Water ___ at 100 degrees.",["boils","is boiling"],0]]},
+ {id:'b',t:'txt',ph:'Escribí solo el verbo conjugado…',title:'Nivel 2 · Completá con el verbo',ins:'Escribí la forma correcta del verbo entre paréntesis (podés usar contracciones).',items:[
+  ["She ___ (not / like) RPGs.",["doesn't like"]],["Right now the player ___ (escape) from a drone.",["is escaping"]],
+  ["We usually ___ (test) the game on Fridays.",["test"]],["___ (you / play) anything at the moment?",["are you playing"]],
+  ["I ___ (not / think) that's a good idea.",["don't think"]],["He ___ (have) two consoles.",["has"]],
+  ["How often ___ (your team / meet)?",["does your team meet"]],["I ___ (see) what you mean.",["see"]],
+  ["Why ___ (you / laugh)? It's not funny!",["are you laughing"]],["Each level ___ (get) harder as the AI learns from your moves.",["gets","is getting"]],
+  ["These consoles ___ (belong) to the university.",["belong"]],["They ___ (have) a party this Saturday. We're invited!",["are having"]]]},
+ {id:'c',t:'ci',title:'Nivel 3 · ¿Correcta o incorrecta?',ins:'Marcá si la oración está bien. Si está mal, escribila corregida.',items:[
+  ["I am knowing the answer.",false,"I know the answer."],["She is working on a new project this month.",true],
+  ["Does he plays every day?",false,"Does he play every day?"],["This game is belonging to my brother.",false,"This game belongs to my brother."],
+  ["They don't want to stop now.",true],["What do you do right now?",false,"What are you doing right now?"],
+  ["He's having a shower at the moment.",true],["My sister doesn't understands the rules.",false,"My sister doesn't understand the rules."],
+  ["We are thinking about changing the game engine.",true],["Players usually are completing the tutorial first.",false,"Players usually complete the tutorial first."]]},
+ {id:'d',t:'mc',title:'Nivel 4 · ¿Con qué tiempo va?',ins:'Clasificá cada expresión de tiempo.',items:[
+  ["every day",["Present simple","Present continuous"],0],["right now",["Present simple","Present continuous"],1],["usually",["Present simple","Present continuous"],0],
+  ["at the moment",["Present simple","Present continuous"],1],["once a week",["Present simple","Present continuous"],0],["currently",["Present simple","Present continuous"],1],
+  ["never",["Present simple","Present continuous"],0],["these days",["Present simple","Present continuous"],1],["Look!",["Present simple","Present continuous"],1]]},
+ {id:'e',t:'txt',title:'Nivel 5 · Armá la pregunta',ins:'Escribí la pregunta completa en present simple o continuous (repaso de la Unit 1).',items:[
+  ["she / play / Fortnite / right now?",["Is she playing Fortnite right now?"]],["how often / you / update / the game?",["How often do you update the game?"]],
+  ["what / your team / work on / this week?",["What is your team working on this week?"]],["your brother / like / platformers?",["Does your brother like platformers?"]],
+  ["why / the game / crash / all the time?",["Why does the game crash all the time?","Why is the game crashing all the time?"]],["you / understand / the instructions?",["Do you understand the instructions?"]]]},
+ {id:'f',t:'oral',title:'Bonus oral · Presentá un juego y tu proyecto',ins:'Es la actividad de la unidad. Hablá 1 minuto por consigna y después mirá el ejemplo.',items:[
+  ["Contá la historia de un juego (present simple).","In Hollow Knight you play as a small knight who explores Hallownest, an old underground kingdom. An infection destroys the kingdom and the knight tries to stop it."],
+  ["Describí lo que pasa en una escena (present continuous).","In this scene the knight is fighting a huge boss. He is jumping over its attacks and he is healing between hits. The music is getting louder."],
+  ["¿Qué sienten los personajes y los jugadores? (stative verbs)","The knight doesn't know the truth about his past. Players love the atmosphere, but some hate the difficult bosses. I believe it's one of the best indie games."],
+  ["Describí los pasos que estás siguiendo en tu proyecto.","This month we're making a 2D game in Unity. Right now I'm designing the levels and my partner is programming the enemies. We usually test the game on Fridays and we fix the bugs the next week."]]}]}
+,
+3:{tab:'3 · Past',title:'Unit 3 · Past simple vs past continuous',
+ tip:`<b>Past simple</b> → acciones terminadas, eventos principales, uno detrás del otro: <i>She <b>stopped</b>, <b>got</b> out of the car and <b>saw</b> a dog.</i><br>
+ <b>Past continuous</b> (<code>was/were + -ing</code>) → acción en progreso, el fondo de la historia: <i>It was getting dark and people <b>were going</b> home.</i><br>
+ <b>Interrupción:</b> <i>I <b>was playing</b> (fondo) <b>when</b> the power <b>went</b> off (evento).</i> · <i><b>While</b> + continuo, <b>when</b> + simple</i>.<br>
+ <b>Ojo:</b> después de <i>did / didn't</i> el verbo va pelado → <i>Did you <b>finish</b>?</i> · <i>She didn't <b>go</b></i>. Los stative verbs tampoco van en continuo en pasado (<i>I <b>knew</b></i>, no <i>was knowing</i>).<br>
+ <b>Secuenciadores:</b> <i>to begin with, at first, then, next, suddenly, after a few minutes, half an hour later, in the end, finally, at last</i>.<br>
+ <b>Conectores:</b> propósito <i>so that, in order to</i> · causa <i>because, since, as</i> · resultado <i>so, as a result</i>.`,
+ note:'Basado en Unit 3 de la cátedra: la historia de Vanessa, Nicholas White en el ascensor, Rosie Ruiz, Marta en el avión, el TP de eventos históricos y "Launch your game".',
+ secs:[
+ {id:'a',t:'mc',title:'Nivel 1 · Elegí la forma correcta',ins:'¿Evento terminado (simple) o acción en progreso (continuo)?',items:[
+  ["I ___ a game when the power went off.",["played","was playing"],1],["Yesterday I ___ to the library, then I had a swim.",["went","was going"],0],
+  ["While we ___ tennis, John hurt his ankle.",["played","were playing"],1],["At 7 pm yesterday we ___ to music.",["listened","were listening"],1],
+  ["Last year some friends and I ___ to Brazil for three weeks.",["went","were going"],0],["It was a beautiful morning. The sun ___ and the birds were singing.",["shone","was shining"],1],
+  ["He ___ his keys, so he couldn't get in.",["lost","was losing"],0],["What ___ when I called you last night?",["did you do","were you doing"],1],
+  ["When I ___ into the room, everyone was working.",["walked","was walking"],0],["In the end, we ___ the match against Brazil.",["lost","were losing"],0],
+  ["Nicholas White ___ to his office when the lift suddenly stopped.",["returned","was returning"],1],["Rosie Ruiz ___ the whole course. She took the subway!",["didn't run","wasn't running"],0],
+  ["It ___ dark and Vanessa was driving fast.",["got","was getting"],1]]},
+ {id:'b',t:'txt',ph:'Escribí solo el verbo conjugado…',title:'Nivel 2 · Completá con el verbo',ins:'Past simple o past continuous. Escribí solo el verbo (podés usar contracciones).',items:[
+  ["Susie ___ (watch) a film when she heard the noise.",["was watching"]],["When the train got to the station, we ___ (wait) on the platform.",["were waiting"]],
+  ["He ___ (meet) his wife while he was working in a bank.",["met"]],["While Vanessa ___ (drive), she hit something in the road.",["was driving"]],
+  ["Martin ___ (not / hear) the car because he was cooking.",["didn't hear"]],["___ (you / sleep) when the earthquake started?",["were you sleeping"]],
+  ["The developers ___ (release) the patch last Friday.",["released"]],["I ___ (buy) the game, downloaded it and played all night.",["bought"]],
+  ["What ___ (the referee / do) when Maradona scored?",["was the referee doing"]],["The servers ___ (crash) while thousands of players were logging in.",["crashed"]],
+  ["We ___ (not / see) the boss coming, so we lost.",["didn't see"]]]},
+ {id:'c',t:'ci',title:'Nivel 3 · ¿Correcta o incorrecta?',ins:'Marcá si la oración está bien. Si está mal, escribila corregida.',items:[
+  ["I was knowing the answer.",false,"I knew the answer."],["Did you finished the level?",false,"Did you finish the level?"],
+  ["While I was playing, my phone rang.",true],["She didn't went to the party.",false,"She didn't go to the party."],
+  ["They was running when the alarm went off.",false,"They were running when the alarm went off."],["What were you doing at 9 last night?",true],
+  ["Her time were very fast.",false,"Her time was very fast."],["Nobody remembered seeing Rosie during the race.",true],
+  ["Then the officials begin to think something was wrong.",false,"Then the officials began to think something was wrong."],
+  ["While the lift stopped, he was returning to his office.",false,"While he was returning to his office, the lift stopped.",["The lift stopped while he was returning to his office.","When the lift stopped, he was returning to his office."]]]},
+ {id:'d',t:'mc',mix:true,title:'Nivel 4 · Secuenciadores y conectores',ins:'Elegí la palabra que corresponde.',items:[
+  ["He upgraded his sword ___ he could defeat the boss.",["so that","because"],0],["___ the level was difficult, they trained for hours.",["Since","So"],0],
+  ["They trained for hours. ___, they won the battle.",["As a result","In order to"],0],["She saved money ___ buy a new console.",["in order to","so that"],0],
+  ["I was really tired, ___ I went to bed early.",["so","because"],0],["___, the hero was training in the mountains. Then a monster appeared.",["To begin with","In the end"],0],
+  ["We were waiting for the bus. ___, a black car stopped next to us.",["Suddenly","While"],0],["___ she was walking home, she met an old friend.",["While","During"],0],
+  ["We searched for hours and ___ we found the treasure.",["at last","at first"],0],["The plane landed. ___, we were at the hotel.",["Half an hour later","While"],0],
+  ["I couldn't play online ___ the servers were down.",["because","so"],0]]},
+ {id:'e',t:'txt',title:'Nivel 5 · Preguntas en pasado',ins:'Armá la pregunta completa. Ojo con las preguntas de sujeto (sin auxiliar).',items:[
+  ["what / you / do (en progreso) / when the lights went off?",["What were you doing when the lights went off?"]],
+  ["where / Obi-Wan / take / Luke after his birth?",["Where did Obi-Wan take Luke after his birth?"]],
+  ["what year / the first Star Wars movie / come out?",["What year did the first Star Wars movie come out?","When did the first Star Wars movie come out?"]],
+  ["who / win / the 1986 World Cup?",["Who won the 1986 World Cup?"]],
+  ["what / the English players / do (en progreso) / when Maradona scored?",["What were the English players doing when Maradona scored?"]],
+  ["why / Rosie Ruiz / lose / her title?",["Why did Rosie Ruiz lose her title?"]]]},
+ {id:'f',t:'oral',title:'Bonus oral · Contá historias',ins:'Hablá 1 minuto por consigna usando los dos pasados y secuenciadores. Después mirá el ejemplo.',items:[
+  ["What were you doing at 9 pm yesterday? And last Saturday at 3 pm?","At 9 pm yesterday I was working on a project for university. My brother was watching TV and my mum was cooking. Last Saturday at 3 pm I was playing online with some friends."],
+  ["Contá una anécdota que te pasó (con secuenciadores).","Last summer I was travelling to Córdoba by bus. To begin with, everything was fine. I was listening to music and the sun was shining. Suddenly, the bus stopped in the middle of the road. After a few minutes, the driver told us there was a problem with the engine. In the end, we waited for two hours, but at last another bus arrived."],
+  ["Entrevista sobre un evento histórico (TP opción B): \"The hand of God\".","A: What were you doing when Maradona scored? B: I was watching the match with my family. A: What was the referee doing? B: He was running behind the players, so he didn't see the hand. A: How did people feel? B: The Argentinian fans were happy, but the English players were very angry."],
+  ["Inventá el comienzo de la historia de tu juego (TP Launch your game, stage 2).","To begin with, a young engineer was repairing robots in an old factory. Suddenly, the lights went off and an alarm started. While she was escaping, she found a strange map. After a few minutes, she realised that the map showed a hidden city. In the end, she decided to follow it."]]}]}
+,
+4:{tab:'4 · Future',title:'Unit 4 · Will vs going to',
+ tip:`<b>Be going to</b> → planes ya decididos antes de hablar y predicciones con <b>evidencia</b>: <i>We<b>'re going to</b> release the beta in March.</i> · <i>Look at those clouds! It<b>'s going to</b> rain.</i><br>
+ <b>Will</b> → decisiones en el momento, promesas, ofrecimientos y predicciones <b>sin evidencia</b> u opiniones (<i>I think, maybe, probably, I'm sure</i>): <i>I'm cold. — I<b>'ll</b> close the window.</i> · <i>I<b>'ll</b> call you, I promise.</i> · <i>I think players <b>will</b> love it.</i><br>
+ <b>Present continuous</b> → arreglos con fecha y hora: <i>We<b>'re meeting</b> the publisher on Friday.</i><br>
+ <b>Forma:</b> <code>will / won't + verbo</code> (nunca <i>will to</i>, nunca <i>wills</i>) · <code>am/is/are (not) going to + verbo</code> · <i><b>Is it</b> going to rain? <b>Will</b> you help me?</i><br>
+ <b>Get:</b> recibir (<i>get a message</i>), conseguir/comprar (<i>get a new GPU</i>), llegar (<i>get home</i>), volverse (<i>get dark, get harder</i>).`,
+ note:'Basado en Unit 4 de la cátedra: lanzamientos de Ubisoft 2024, el pitch de 2035, tendencias de la industria, usos de "get" y la etapa 4 del TP "Launch your game".',
+ secs:[
+ {id:'a',t:'mc',mix:true,title:'Nivel 1 · Will o going to',ins:'Elegí la forma correcta según el uso.',items:[
+  ["We've got tickets. We ___ the concert tonight.",["are going to see","will see"],0],["A: I'm cold. B: OK, I ___ the heater.",["'ll turn on","'m going to turn on"],0],
+  ["Look at those clouds! It ___.",["'s going to rain","'ll rain"],0],["I ___ you tonight, I promise!",["'ll call","'m going to call"],0],
+  ["According to our roadmap, we ___ the beta in March.",["are going to release","will release"],0],["I think players ___ the new map.",["will love","are going to love"],0],
+  ["The frame rate is dropping! The game ___.",["is going to crash","will crash"],0],["A: The blue jeans are $20 and the black ones are $22. B: I ___ the blue ones, please.",["'ll take","'m going to take"],0],
+  ["Kat hasn't studied at all. She ___ the exam.",["isn't going to pass","won't pass"],0],["Don't worry, I ___ your secret to anyone.",["won't tell","'m not going to tell"],0],
+  ["\"Why are you putting on your coat?\" \"I ___ out.\"",["'m going","'ll go"],0],["Maybe the servers ___ on launch day.",["will crash","are going to crash"],0],
+  ["A: What are your plans for the summer? B: I ___ my cousin in the USA.",["'m going to visit","'ll visit"],0]]},
+ {id:'b',t:'txt',ph:'Solo el verbo, sin el sujeto…',title:'Nivel 2 · Completá con will o going to',ins:'Escribí la forma correcta del verbo, sin el sujeto (podés usar contracciones: \'ll, \'m, won\'t…).',items:[
+  ["A: We've run out of milk. B: I know. I ___ (buy) some later. It's on the shopping list.",["am going to buy"]],
+  ["A: It's freezing in here! B: OK, I ___ (close) the window.",["will close"]],
+  ["I'm sure your aunt ___ (lend) us some money. She's very rich.",["will lend"]],
+  ["That car is going much too fast! It ___ (crash)!",["is going to crash"]],
+  ["Oh no, a bug! Don't worry, I ___ (fix) it right now.",["will fix"]],
+  ["Next month our concept artists ___ (design) the enemy factions. It's in the schedule.",["are going to design"]],
+  ["I don't think Chelsea ___ (win) the league. Their team isn't strong enough.",["will win"]],
+  ["___ (you / help) me with this level? Please!",["will you help"]],
+  ["Look at the sales metrics! This genre ___ (be) the biggest trend of the year.",["is going to be"]],
+  ["We ___ (not / launch) on PlayStation. We decided that last week.",["aren't going to launch","are not going to launch"]],
+  ["If she passes the exam, she ___ (be) very happy.",["will be"]]]},
+ {id:'c',t:'ci',title:'Nivel 3 · ¿Correcta o incorrecta?',ins:'Marcá si la oración está bien. Si está mal, escribila corregida.',items:[
+  ["I will to call you tomorrow.",false,"I will call you tomorrow.",["I'll call you tomorrow."]],["She's going to start university next year.",true],
+  ["Look at the sky! It will rain.",false,"Look at the sky! It's going to rain."],["Are you going to come to the launch party?",true],
+  ["We going to release the game in May.",false,"We are going to release the game in May."],["He wills win the tournament.",false,"He will win the tournament."],
+  ["Don't worry, I won't tell anyone.",true],["Do you think the game will be popular?",true],
+  ["They're going to playing online tonight.",false,"They're going to play online tonight."],["Is going to rain tomorrow?",false,"Is it going to rain tomorrow?"]]},
+ {id:'d',t:'mc',title:'Nivel 4 · ¿Qué uso es?',ins:'Identificá por qué se usa will o going to en cada oración.',items:[
+  ["We're going to promote the game on TikTok. It's all planned.",["Plan","Evidencia","Decisión espontánea","Promesa","Predicción / opinión"],0],
+  ["Look at those clouds. It's going to rain.",["Plan","Evidencia","Decisión espontánea","Promesa","Predicción / opinión"],1],
+  ["The phone is ringing. I'll get it!",["Plan","Evidencia","Decisión espontánea","Promesa","Predicción / opinión"],2],
+  ["I'll send you the build tonight, I promise.",["Plan","Evidencia","Decisión espontánea","Promesa","Predicción / opinión"],3],
+  ["I think VR games will be very popular in 2030.",["Plan","Evidencia","Decisión espontánea","Promesa","Predicción / opinión"],4],
+  ["The frame rate is dropping. The engine is going to crash.",["Plan","Evidencia","Decisión espontánea","Promesa","Predicción / opinión"],1],
+  ["I'm going to study game design next year.",["Plan","Evidencia","Decisión espontánea","Promesa","Predicción / opinión"],0],
+  ["Maybe the servers will crash on launch day.",["Plan","Evidencia","Decisión espontánea","Promesa","Predicción / opinión"],4]]},
+ {id:'e',t:'mc',title:'Nivel 5 · Los usos de "get"',ins:'¿Qué significa get en cada oración?',items:[
+  ["I got a message from the publisher.",["receive","buy / obtain","arrive","become"],0],["It's getting dark.",["receive","buy / obtain","arrive","become"],3],
+  ["What time did you get home?",["receive","buy / obtain","arrive","become"],2],["I need to get a new graphics card.",["receive","buy / obtain","arrive","become"],1],
+  ["The game gets harder in every level.",["receive","buy / obtain","arrive","become"],3],["We got to the stadium at 8.",["receive","buy / obtain","arrive","become"],2],
+  ["Did you get my email?",["receive","buy / obtain","arrive","become"],0],["Where did you get that skin?",["receive","buy / obtain","arrive","become"],1]]},
+ {id:'f',t:'mc',mix:true,title:'Nivel 6 · Reading comprehension',ins:`Leé el texto y contestá.<span class="card" style="display:block;margin-top:10px;color:var(--ink)"><b>Skyforge: launch news</b><br>Next year, our studio is going to launch <i>Skyforge</i>, a cross-platform survival game. The release date is already fixed: players are going to download it on March 3rd. We aren't going to sell physical copies; the game will be available only through a subscription service. Our tests show that the servers are going to need a big upgrade, because 40,000 players joined the beta in a single weekend. What will happen after launch? Nobody knows for sure, but we think competitive players will love the ranked mode, and maybe we will organise our first e-sports tournament in 2028. One thing is certain: we won't stop updating the game. We promise new content every season.</span><span class="m" style="font-size:14px">Texto de práctica escrito para este ejercicio.</span>`,items:[
+  ["When is Skyforge going to come out?",["On March 3rd","In 2028","Nobody knows yet"],0],
+  ["How can players get the game?",["Only through a subscription","In shops","Only on mobile phones"],0],
+  ["Why are the servers going to need an upgrade?",["Because a lot of players joined the beta","Because the game is very old","Because of the e-sports tournament"],0],
+  ["Is the e-sports tournament a fixed plan?",["No, it's only a possibility","Yes, it's in the schedule","Yes, it's on March 3rd"],0],
+  ["\"We won't stop updating the game\" is…",["a promise","a plan based on evidence","an action in the past"],0]]},
+ {id:'g',t:'oral',title:'Bonus oral · Planes, predicciones y lanzamientos',ins:'Hablá 1 minuto por consigna. Después mirá el ejemplo.',items:[
+  ["Contá tus planes para el año que viene (going to).","Next year I'm going to finish my second year at university. I'm going to make a bigger game with some classmates, and in the summer I'm going to look for an internship in a game studio."],
+  ["Hacé 3 predicciones sobre la industria de los videojuegos en 2035 (will).","I think cloud gaming will replace consoles. Probably AI will create a lot of the content, like NPC dialogues. And I'm sure e-sports will be as popular as football."],
+  ["Presentá un lanzamiento que se viene (actividad de la unidad): qué juego es, cuándo sale y por qué lo elegiste.","I chose Hollow Knight: Silksong. It's going to be a 2D action game and the main character is Hornet. I chose it because I loved the first game, and I think it will be one of the best indie games of the year."],
+  ["TP Launch your game, stage 4: 2 planes y 2 predicciones para el día del lanzamiento.","Plans: we're going to promote the game on TikTok and we're going to release a free demo one week before. Predictions: maybe the servers will crash on launch day, but I think players will love the art style."]]}]}
+,
+5:{tab:'5 · Pres. perfect',title:'Unit 5 · Present perfect & comparatives',
+ tip:`<b>Present perfect</b> <code>have/has + participio</code> → experiencias (<i>I<b>'ve been</b> to Brazil</i>), algo que acaba de pasar (<i>I<b>'ve just finished</b></i>), lo que importa es la acción, no el cuándo. Con <i>for / since</i>: algo que empezó en el pasado y sigue (<i>I<b>'ve lived</b> here for 6 years</i>).<br>
+ <b>Past simple</b> → cuando decís o preguntás el momento: <i>yesterday, last week, in 2019, when I was a kid, When…?</i> → <i>I <b>saw</b> it last week.</i><br>
+ <b>For</b> + período (<i>for ten years</i>) · <b>since</b> + punto de inicio (<i>since 2012, since I was born</i>).<br>
+ <b>Ever</b> (preguntas) · <b>never</b> · <b>just</b> (recién) · <b>already</b> (ya, antes de lo esperado) · <b>yet</b> (preguntas y negativas, al final).<br>
+ <b>Been vs gone:</b> <i>He's <b>been</b> to Paris</i> (fue y volvió) · <i>He's <b>gone</b> to Paris</i> (está allá ahora).<br>
+ <b>Comparativos:</b> <i>fast<b>er</b> than · <b>more</b> realistic than · <b>the</b> fast<b>est</b> · <b>the most</b> iconic · <b>as</b> big <b>as</b></i> · irregulares: <i>good → better → the best, bad → worse → the worst</i>.`,
+ note:'Basado en Unit 5 de la cátedra (present perfect, time expressions, comparatives con adjetivos de videojuegos), la Review 5–8 y la práctica de sistemas educativos.',
+ secs:[
+ {id:'a',t:'mc',mix:true,title:'Nivel 1 · Present perfect o past simple',ins:'Fijate si se dice cuándo pasó o si el período sigue abierto.',items:[
+  ["I ___ to China. What's it like?",["haven't been","didn't go"],0],["It ___ twice already this year.",["has snowed","snowed"],0],
+  ["I ___ my first Disney film when I was four.",["saw","have seen"],0],["We feel at home here because we ___ in this village for six years now.",["have lived","lived"],0],
+  ["I'm a big tennis fan, but I ___ to Wimbledon.",["have never been","never went to"],0],["I ___ an email to Jack last week, but he hasn't replied.",["sent","have sent"],0],
+  ["My team ___ a match since the start of the year.",["hasn't won","didn't win"],0],["It ___ yesterday, although it was very cold.",["didn't snow","hasn't snowed"],0],
+  ["___ a game jam?",["Have you ever done","Did you ever do"],0],["When ___ the game?",["did you finish","have you finished"],0],
+  ["She ___ in Córdoba since 2020.",["has lived","lived"],0],["Shakespeare ___ more than 30 plays.",["wrote","has written"],0]]},
+ {id:'b',t:'mc',title:'Nivel 2 · Been o gone',ins:'¿Fue y volvió (been) o todavía está allá (gone)?',items:[
+  ["'Where's Dad?' 'He's ___ to work.'",["been","gone"],1],["Joe has ___ to town. He'll be back at about six.",["been","gone"],1],
+  ["'Have you ever ___ surfing?' 'No, but I'd like to try it.'",["been","gone"],0],["You're late. Where have you ___?",["been","gone"],0],
+  ["I'd love to visit Paris again. I haven't ___ there for years.",["been","gone"],0],["Joe was here a moment ago, but now he's ___.",["been","gone"],1]]},
+ {id:'c',t:'mc',title:'Nivel 3 · For o since',ins:'Período (for) o punto de inicio (since).',items:[
+  ["I've had this watch ___ my birthday.",["for","since"],1],["Kate has known Pete ___ ten years.",["for","since"],0],
+  ["We've been in Italy ___ last Tuesday.",["for","since"],1],["I've lived in Newport ___ I was born.",["for","since"],1],
+  ["I haven't been well ___ a few days.",["for","since"],0],["My parents have been married ___ 1990.",["for","since"],1],
+  ["I haven't seen Mark ___ a long time.",["for","since"],0],["I've wanted to make games ___ I was a kid.",["for","since"],1]]},
+ {id:'d',t:'txt',ph:'Solo el verbo con la palabra, sin el sujeto…',title:'Nivel 4 · Just, already, yet, ever, never',ins:'Escribí el verbo en present perfect con la palabra entre paréntesis en el lugar correcto, sin el sujeto.',items:[
+  ["A: Would you like something to eat? B: No, thanks. I ___ lunch. (just / have)",["have just had"]],
+  ["A: What time is David leaving? B: He ___. (already / leave)",["has already left","has left already"]],
+  ["A: Are your friends here? B: Yes, they ___. (just / arrive)",["have just arrived"]],
+  ["Ann isn't coming with us. She ___ the film. (already / see)",["has already seen"]],
+  ["___ Japanese food? (you / ever / try)",["have you ever tried"]],
+  ["I ___ a game in Unreal. (never / make)",["have never made"]],
+  ["Wait a minute! I ___. (not / finish / yet)",["haven't finished yet"]],
+  ["The new update ___. (not / come out / yet)",["hasn't come out yet"]]]},
+ {id:'e',t:'txt',ph:'Participio…',title:'Nivel 5 · Participios irregulares',ins:'Escribí el participio pasado (la forma que va después de have/has).',items:[
+  ["go",["gone"]],["eat",["eaten"]],["write",["written"]],["be",["been"]],["see",["seen"]],["win",["won"]],
+  ["buy",["bought"]],["make",["made"]],["fly",["flown"]],["take",["taken"]],["break",["broken"]],["do",["done"]]]},
+ {id:'f',t:'mc',mix:true,title:'Nivel 6 · Comparativos y superlativos',ins:'Elegí la forma correcta.',items:[
+  ["Elden Ring is ___ than Dark Souls.",["more expansive","expansiver","most expansive"],0],["Tetris is one of ___ games ever.",["the most iconic","the iconicest","more iconic"],0],
+  ["This level is ___ than the first one.",["easier","more easy","easyer"],0],["Mario Kart isn't as ___ as Call of Duty.",["violent","violenter","more violent"],0],
+  ["It's ___ game I've ever played.",["the best","the better","the most good"],0],["The graphics are ___ than in the old version.",["better","gooder","more good"],0],
+  ["Online games are ___ than offline ones.",["more competitive","competitiver","the most competitive"],0],["This is ___ boss in the game.",["the hardest","the most hard","harder"],0],
+  ["The new map is ___ the old one.",["as big as","as bigger as","big as"],0],["My PC is ___ than yours.",["faster","more fast","fastest"],0],
+  ["Retro games are ___ modern ones.",["less realistic than","less realistic as","least realistic than"],0],["The sequel was ___ than the first game. Nobody liked it.",["worse","badder","more bad"],0]]},
+ {id:'g',t:'oral',title:'Bonus oral · Experiencias y comparaciones',ins:'Hablá 1 minuto por consigna. Después mirá el ejemplo.',items:[
+  ["Find somebody who…: hacé 4 preguntas con Have you ever…? y contestalas (si dicen que sí, pedí detalles en pasado).","Have you ever met someone famous? Yes, I have. I met a famous streamer at a gaming convention last year. Have you ever won a competition? No, I haven't, but I've played in a few tournaments."],
+  ["Compará dos juegos (gráficos, jugabilidad, precio, duración).","Elden Ring is more expansive than Hollow Knight, but Hollow Knight is cheaper and easier to run. I think Hollow Knight's music is as good as Elden Ring's. Elden Ring is the most challenging game I've ever played."],
+  ["Compará el sistema educativo de EE. UU. con el británico (práctica de la cátedra).","In the US, students go to elementary school, middle school and high school, while in the UK they go to primary and secondary school. American students have more elective subjects than British students. University in the US is usually more expensive than in the UK."],
+  ["Describí el sistema educativo argentino y decí cuál preferís y por qué.","In Argentina, public universities are free, so they are more accessible than in the US or the UK. Secondary school lasts five or six years. I prefer our system because anyone can study, although American universities have better facilities."]]}]}
+,
+6:{tab:'6 · Money',title:'Unit 6 · How much is it?',
+ tip:`<b>Relative clauses:</b> <i><b>who</b></i> para personas · <i><b>which / that</b></i> para cosas · <i><b>where</b></i> para lugares → <i>A customer is a person <b>who</b> buys things.</i> · <i>A bank is a place <b>where</b> you keep money.</i><br>
+ <b>Cuantificadores:</b> <i>some</i> (afirmativas) / <i>any</i> (negativas y preguntas) · <i>much</i> + incontables / <i>many</i> + contables · <i>a lot of / lots of</i> (los dos) · <i>a few</i> + contables / <i>a little</i> + incontables (poco) · <i>too much / too many</i> = más de lo necesario (negativo) · <i>enough</i> = lo necesario.<br>
+ <b>Dinero:</b> <i><b>borrow</b></i> (pedir prestado) ≠ <i><b>lend</b></i> (prestar) · <i>owe</i> (deber) · <i>afford</i> (poder pagar) · <i>save up</i> (ahorrar) · <i>receipt</i> (ticket de compra) · <i>bill</i> (cuenta/factura) · <i>balance</i> (saldo) · <i>cash, coins, notes</i>.<br>
+ <b>Razón:</b> <i>because, as, since</i> · <b>Resultado:</b> <i>so, therefore, as a result, for this reason</i>.<br>
+ <b>Si no sabés la palabra:</b> <i>I've forgotten the word in English · What's it called? · It looks like… · You use it to… · It's a thing which/that you use to… · Do you know what I mean?</i>`,
+ note:'Basado en Unit 6 de la cátedra: ingresos del gaming, "The end of money?" (Suecia y Kenia), "Living with less", explicar palabras y la Review 5–8.',
+ secs:[
+ {id:'a',t:'mc',title:'Nivel 1 · Who, which/that o where',ins:'Completá la definición con el relativo correcto.',items:[
+  ["A customer is a person ___ buys products or services.",["who","which / that","where"],0],["A bank account is a place ___ you keep your money safely.",["who","which / that","where"],2],
+  ["A receipt is a piece of paper ___ shows what you paid.",["who","which / that","where"],1],["A minimalist is someone ___ prefers living with fewer possessions.",["who","which / that","where"],0],
+  ["An arcade is a place ___ people play videogames.",["who","which / that","where"],2],["A controller is a device ___ you use to play.",["who","which / that","where"],1],
+  ["A speedrunner is a player ___ finishes games very fast.",["who","which / that","where"],0],["Neo-Tokyo is the city ___ Shadow Circuit takes place.",["who","which / that","where"],2],
+  ["DLC is extra content ___ you download after buying the game.",["who","which / that","where"],1]]},
+ {id:'b',t:'mc',mix:true,title:'Nivel 2 · Explicar palabras que no sabés',ins:'Elegí la frase correcta.',items:[
+  ["Describing a stapler:",["You use it to join pieces of paper.","You use it for join pieces of paper.","It's used for join pieces of paper."],0],
+  ["Describing a charger:",["It's a thing that you use to charge your phone.","It's a thing you use it to charge your phone.","It's a thing for to charge your phone."],0],
+  ["Describing a joystick:",["It looks like a small stick.","It looks a small stick.","It's looks like a small stick."],0],
+  ["When you don't remember the word:",["I've forgotten the word in English.","I've forgot the word in English.","I forgotten the word in English."],0],
+  ["Checking that the other person understands:",["Do you know what I mean?","Do you know what do I mean?","Are you know what I mean?"],0],
+  ["An envelope:",["It's a paper object which is used to send letters.","It's a paper object who is used to send letters.","It's a paper object where you use to send letters."],0]]},
+ {id:'c',t:'mc',mix:true,title:'Nivel 3 · Cuantificadores',ins:'¿Contable o incontable? ¿Positivo o negativo?',items:[
+  ["We took ___ great photos while we were on holiday.",["some","any"],0],["My partner loves reading. She's got ___ books.",["a lot of","too much"],0],
+  ["There's ___ sugar in my coffee. I can't drink it.",["too much","too many"],0],["We live in a small village. There are only ___ houses.",["a few","a little"],0],
+  ["How ___ credit cards have you got?",["many","much"],0],["The bill is right. There aren't ___ mistakes.",["any","some"],0],
+  ["Do you do ___ exercise?",["much","many"],0],["I can't buy this laptop. I don't have ___ money.",["enough","too many"],0],
+  ["Carrying ___ cash can be dangerous because of robberies.",["too much","too many"],0],["Small businesses pay ___ money to the bank every time you use a card.",["a little","a few"],0],
+  ["Only ___ people in Kenya (under 20%) have a bank account.",["a few","a little"],0],["I don't like carrying ___ coins in my pocket.",["too many","too much"],0]]},
+ {id:'d',t:'mc',mix:true,title:'Nivel 4 · Vocabulario de dinero',ins:'Elegí la palabra correcta.',items:[
+  ["Can I ___ your charger? I'll give it back tomorrow.",["borrow","lend"],0],["Can you ___ me $10 until Friday?",["lend","borrow"],0],
+  ["My friend still ___ me $20!",["owes","lends"],0],["I can't ___ a new console right now. It's too expensive.",["afford","owe"],0],
+  ["I'm ___ for a new car. I put some money aside every month.",["saving up","spending"],0],["Before leaving the store, check your ___ to make sure the charge is correct.",["receipt","balance"],0],
+  ["Every month I have to pay my phone ___.",["bill","ticket"],0],["I check my bank ___ regularly.",["balance","receipt"],0],
+  ["In Sweden you pay for your bus ___ by card or mobile phone.",["ticket","bill"],0]]},
+ {id:'e',t:'mc',mix:true,title:'Nivel 5 · Conectores de razón y resultado',ins:'Elegí el conector correcto.',items:[
+  ["Marc lives in a tiny flat. ___ he can't have many possessions.",["Therefore","As"],0],["I have an e-reader ___ books take up too much space.",["since","so"],0],
+  ["We're moving to a smaller house. ___, we need to get rid of some furniture.",["As a result","Because"],0],["We paid in cash ___ they didn't accept cards.",["because","so"],0],
+  ["Her sofa was getting old, ___ she bought a new one.",["so","because"],0],["___ my wardrobe is very small, choosing clothes is easy.",["As","So"],0],
+  ["He spent all his money on clothes. ___, he couldn't afford a new laptop.",["For this reason","Since"],0]]},
+ {id:'f',t:'oral',title:'Bonus oral · Dinero y objetos',ins:'Hablá 1 minuto por consigna. Después mirá el ejemplo.',items:[
+  ["Describí 3 objetos como si no supieras cómo se llaman (roleplay en un negocio).","Excuse me, I'm looking for a thing… I've forgotten the word in English. It's a small thing that you use to connect your phone to the computer. It looks like a cable. Do you know what I mean? — A USB cable? — Exactly! That's what I'm looking for."],
+  ["Resultados de una encuesta de hábitos de gasto (All of us / A lot of us / A few of us / None of us).","All of us spend money on food. A lot of us spend most of our money on transport and games. A few of us prefer shopping with other people, and none of us has borrowed a large amount of money."],
+  ["¿Te gustaría vivir en una sociedad sin efectivo? Ventajas y desventajas.","I think a cashless society is safer, because there isn't as much robbery, and it's faster to pay. However, elderly people may need help with the technology, and small shops have to pay a little money to the bank every time. As a result, I'd like to use cards, but I don't think cash should disappear."],
+  ["Describí cómo ganan plata los juegos hoy (monetización).","Today games don't only make money when you buy them. A lot of games are free to play, so they sell skins, DLC and subscriptions. Mobile games generate about half of the money in the industry."]]}]}
+,
+7:{tab:'7 · Modals',title:'Unit 7 · Modals of obligation',
+ tip:`<b>Must / have to</b> → obligación: <i>You <b>must</b> collect all the coins to open the chest.</i> · <i>I <b>have to</b> work tomorrow.</i><br>
+ <b>Mustn't</b> → prohibición (no podés): <i>You <b>mustn't</b> touch the red button.</i><br>
+ <b>Don't have to</b> → no es necesario (podés, pero no hace falta): <i>You <b>don't have to</b> do this side quest.</i> ⚠ <i>mustn't</i> ≠ <i>don't have to</i>.<br>
+ <b>Should / shouldn't</b> → consejo: <i>You <b>should</b> save before the boss.</i> · <b>Can / can't</b> → capacidad o permiso.<br>
+ <b>Pasado:</b> <i>must / have to → <b>had to</b></i> · <i>don't have to → <b>didn't have to</b></i> · prohibición en pasado: <i><b>weren't allowed to</b></i>.<br>
+ <b>Forma:</b> modal + verbo pelado (nunca <i>must to, should to</i>) · <i>have to</i> se conjuga: <i>She <b>has</b> to · <b>Does</b> she <b>have</b> to…? · He <b>doesn't</b> have to</i>.`,
+ note:'Basado en Unit 7 de la cátedra: modal verbs en videojuegos, el quiz de must / have to / should y "Video Game Law".',
+ secs:[
+ {id:'a',t:'mc',mix:true,title:'Nivel 1 · Elegí el modal',ins:'Obligación, prohibición, falta de necesidad, consejo o capacidad.',items:[
+  ["You ___ bring your passport to travel to another country.",["have to","don't have to","shouldn't"],0],["You ___ bring plants or animals into some countries.",["mustn't","don't have to","should"],0],
+  ["You ___ bring a bathing suit if you're going to a place with a beach.",["should","mustn't","don't have to"],0],["To be safe, you ___ take a lot of cash with you.",["shouldn't","have to","must"],0],
+  ["You ___ be an expert to use the basic functions of the program.",["don't have to","mustn't","must"],0],["What are you doing? You ___ be here!",["mustn't","don't have to","should"],0],
+  ["We went to bed early because we ___ get up early the next day.",["had to","must","should"],0],["I ___ take any money. It wasn't necessary.",["didn't have to","mustn't","shouldn't"],0],
+  ["We ___ talk to each other because it was an exam.",["weren't allowed to","didn't have to","mustn't"],0],["You ___ touch the red button. It will activate a trap.",["mustn't","don't have to","should"],0],
+  ["You ___ complete this optional quest, but it gives good rewards.",["don't have to","mustn't","have to"],0],["You ___ save your game before entering a dangerous area.",["should","mustn't","don't have to"],0],
+  ["Your character ___ jump over small obstacles, but it can't break walls.",["can","must","should"],0],["You ___ attack the boss directly. Try to weaken its defences first.",["shouldn't","don't have to","can't"],0]]},
+ {id:'b',t:'mc',title:"Nivel 2 · Mustn't o don't have to",ins:'Prohibido (mustn\'t) o no hace falta (don\'t have to).',items:[
+  ["It's a free game. You ___ pay to download it.",["mustn't","don't have to"],1],["Players ___ share other players' personal data.",["mustn't","don't have to"],0],
+  ["You ___ finish the tutorial. You can skip it.",["mustn't","don't have to"],1],["Ads for free games ___ hide the in-game purchases.",["mustn't","don't have to"],0],
+  ["Companies ___ share player data without permission.",["mustn't","don't have to"],0],["You ___ buy the DLC to finish the story.",["mustn't","don't have to"],1],
+  ["You ___ use cheats in ranked matches. You'll be banned.",["mustn't","don't have to"],0],["Tomorrow is Sunday. I ___ get up early.",["mustn't","don't have to"],1]]},
+ {id:'c',t:'ci',title:'Nivel 3 · ¿Correcta o incorrecta?',ins:'Marcá si la oración está bien. Si está mal, escribila corregida.',items:[
+  ["You must to save before the boss.",false,"You must save before the boss."],["She has to work tomorrow.",true],
+  ["He don't have to pay for the game.",false,"He doesn't have to pay for the game."],["Players should to read the rules.",false,"Players should read the rules."],
+  ["Do I have to create an account?",true],["Yesterday I must stay at home.",false,"Yesterday I had to stay at home."],
+  ["You mustn't share your password.",true],["Does she has to pay?",false,"Does she have to pay?"],
+  ["You shouldn't play all night before an exam.",true],["Must I to wear a uniform?",false,"Must I wear a uniform?",["Do I have to wear a uniform?"]]]},
+ {id:'d',t:'mc',mix:true,title:'Nivel 4 · Reading comprehension',ins:`Leé el texto y contestá.<span class="card" style="display:block;margin-top:10px;color:var(--ink)"><b>Games and the law</b><br>Making a game is expensive, so studios have to protect their work. Copyright protects the game itself: the code, the characters, the story, the images and the music. A trademark protects the name, the logo and the slogan. If another company wants to use a famous character, it has to pay for a licence. Advertising has rules too: ads mustn't be misleading, so if a free game sells items, the ad should make that clear. Privacy is another big area. Companies must protect the data they collect, especially children's data, and they mustn't share it with other companies without permission. Players don't have to read every legal document, but they should check what data a game collects.</span><span class="m" style="font-size:14px">Texto de práctica escrito para este ejercicio, basado en el tema de "Video Game Law".</span>`,items:[
+  ["What does a trademark protect?",["The name, the logo and the slogan","The code and the music","Players' personal data"],0],
+  ["What does a company have to do to use a famous character?",["Pay for a licence","Change the character's name","Nothing, it's free"],0],
+  ["What mustn't ads do?",["Mislead players","Show the price of the game","Use celebrities"],0],
+  ["Can companies share player data freely?",["No, they need permission","Yes, always","Only children's data"],0],
+  ["What advice does the text give players?",["They should check what data a game collects","They have to read every legal document","They mustn't download free games"],0]]},
+ {id:'e',t:'oral',title:'Bonus oral · Reglas y requisitos',ins:'Es la presentación de la unidad. Hablá 1 minuto por consigna y después mirá el ejemplo.',items:[
+  ["Opción A: las reglas y recomendaciones de tu propio juego (modals).","In my game, you have to collect three keys to open the final door. You mustn't touch the red lasers, because they kill you instantly. You don't have to talk to every NPC, but you should, because some of them give you useful items. You can double jump after level 2."],
+  ["Opción B: qué se necesita para crear un juego (o un instrumento, o un proceso de desarrollo).","To create a 2D game, you have to choose an engine, like Unity or Godot. You must plan the mechanics before you start programming. You don't have to draw all the art yourself, you can use free assets, but you should check the licence. You mustn't forget to test the game with real players."],
+  ["Reglas de tu universidad o de tu casa.","At my university we have to attend at least 75% of the classes. We don't have to wear a uniform. We mustn't copy in exams. When I was at school, I had to get up at 6 every day."],
+  ["Consejos para alguien que empieza a jugar a tu juego favorito (should / shouldn't).","You should play the tutorial first. You shouldn't spend all your money at the beginning. You should explore every area, because there are a lot of secrets."]]}]}
+,
+8:{tab:'8 · Conditionals',title:'Unit 8 · First & second conditional',
+ tip:`<b>1st conditional</b> (situación real o posible): <code>If + presente simple, will + verbo</code> → <i>If the player <b>presses</b> jump, the character <b>will jump</b>.</i><br>
+ <b>2nd conditional</b> (situación imaginaria o hipotética): <code>If + pasado simple, would + verbo</code> → <i>If I <b>had</b> more money, I <b>would buy</b> a new PC.</i> · <i>If I <b>were</b> you, I'd save now.</i><br>
+ <b>Nunca</b> va <i>will</i> ni <i>would</i> en la parte del <i>if</i>: <i>If you <s>will press</s> <b>press</b>…</i> · <i>If I <s>would have</s> <b>had</b>…</i><br>
+ <b>Orden:</b> se pueden dar vuelta → <i>The door will open <b>if</b> you press the button.</i> Cuando el <i>if</i> va primero, lleva coma.<br>
+ <b>Preguntas:</b> <i>What <b>will</b> you do if the server crashes?</i> · <i>What <b>would</b> you do if you won the lottery?</i>`,
+ note:'Basado en Unit 8 de la cátedra: conditional 1 en la lógica de los videojuegos, conditional 2 y narrativas ramificadas, la historia en cadena del café y "Murder on the Orient Express".',
+ secs:[
+ {id:'a',t:'txt',ph:'Solo el verbo, sin el sujeto…',title:'Nivel 1 · First conditional',ins:'Escribí la forma correcta del verbo, sin el sujeto (podés usar contracciones).',items:[
+  ["If the player ___ (press) the jump button, the character will jump.",["presses"]],["If you collect all the coins, you ___ (unlock) a new level.",["will unlock"]],
+  ["If the enemy ___ (attack), you will lose health.",["attacks"]],["If you don't drink coffee in the morning, you ___ (fall) asleep at your desk.",["will fall"]],
+  ["If it ___ (not / rain), we'll play outside.",["doesn't rain"]],["She ___ (be) very happy if she passes the exam.",["will be"]],
+  ["If you eat all that cake, you ___ (feel) sick.",["will feel"]],["What ___ (you / do) if the server crashes?",["will you do"]]]},
+ {id:'b',t:'txt',ph:'Solo el verbo, sin el sujeto…',title:'Nivel 2 · Second conditional',ins:'Escribí la forma correcta del verbo, sin el sujeto (podés usar contracciones como \'d o wouldn\'t).',items:[
+  ["If I ___ (have) more money, I would buy a new PC.",["had"]],["If the player chose the dark path, it ___ (lead) to a hidden treasure.",["would lead"]],
+  ["If I ___ (be) you, I would study more.",["were","was"]],["If we lived in Japan, we ___ (visit) Nintendo's offices.",["would visit"]],
+  ["What ___ (you / do) if you won the lottery?",["would you do"]],["If she ___ (know) the answer, she would tell you.",["knew"]],
+  ["I ___ (not / play) that game if I were you.",["wouldn't play","would not play"]],["If games ___ (be) free, more people would play them.",["were"]]]},
+ {id:'c',t:'mc',mix:true,title:'Nivel 3 · ¿Primero o segundo?',ins:'¿Es posible/real o imaginario?',items:[
+  ["If I ___ a famous developer, I would make an MMO.",["were","am"],0],["If it rains tomorrow, we ___ at home.",["'ll stay","'d stay"],0],
+  ["If I ___ you, I'd save the game now.",["were","am"],0],["If you press start, the game ___.",["will begin","would begin"],0],
+  ["If dinosaurs ___ alive, the world would be very different.",["were","are"],0],["If I ___ time this weekend, I'll finish the level.",["have","had"],0],
+  ["If I could fly, I ___ to university.",["would fly","will fly"],0],["If he doesn't hurry, he ___ the bus.",["will miss","would miss"],0]]},
+ {id:'d',t:'ci',title:'Nivel 4 · ¿Correcta o incorrecta?',ins:'Marcá si la oración está bien. Si está mal, escribila corregida.',items:[
+  ["If you will press the button, the door will open.",false,"If you press the button, the door will open."],["If I had a million dollars, I would build a studio.",true],
+  ["If I would have time, I would help you.",false,"If I had time, I would help you."],["If she studies, she will pass.",true],
+  ["If I was rich, I will buy an island.",false,"If I was rich, I would buy an island.",["If I were rich, I would buy an island.","If I were rich, I'd buy an island.","If I was rich, I'd buy an island."]],
+  ["What would you do if you met your favourite streamer?",true],
+  ["If the player collect all the gems, he will win.",false,"If the player collects all the gems, he will win."],
+  ["We would play more if we have more free time.",false,"We would play more if we had more free time.",["We'd play more if we had more free time."]]]},
+ {id:'e',t:'txt',ph:'Escribí la oración completa…',title:'Nivel 5 · Armá la oración',ins:'Escribí la oración condicional completa empezando con If. Entre paréntesis te dice si es 1st o 2nd.',items:[
+  ["you / jump on the enemy → it / die (1st)",["If you jump on the enemy, it will die."]],
+  ["I / be / a game character → I / be / a wizard (2nd)",["If I were a game character, I would be a wizard.","If I was a game character, I would be a wizard.","If I were a game character, I'd be a wizard.","If I was a game character, I'd be a wizard."]],
+  ["she / not save → she / lose / her progress (1st)",["If she doesn't save, she will lose her progress.","If she doesn't save, she'll lose her progress."]],
+  ["we / have / a bigger team → we / make / an open-world game (2nd)",["If we had a bigger team, we would make an open-world game.","If we had a bigger team, we'd make an open-world game."]],
+  ["the boss / see / you → it / attack (1st)",["If the boss sees you, it will attack.","If the boss sees you, it will attack you.","If the boss sees you, it'll attack you.","If the boss sees you, it'll attack."]],
+  ["you / can / change one thing in the game → what / you / change? (2nd)",["If you could change one thing in the game, what would you change?"]]]},
+ {id:'f',t:'oral',title:'Bonus oral · Causas, consecuencias y "what if"',ins:'Hablá 1 minuto por consigna. Después mirá el ejemplo.',items:[
+  ["Elegí un juego y decí 8 comandos con causa y consecuencia (1st conditional, actividad de la cátedra).","In Super Mario: if you press A, Mario will jump. If you jump on a Goomba, it will die. If you touch an enemy, you will lose a life. If you collect 100 coins, you will get an extra life. If you eat a mushroom, you will grow. If you take a star, you will be invincible. If you fall into a hole, you will die. If you reach the flag, you will finish the level."],
+  ["Inventá una historia en cadena (como la del café).","If I don't sleep tonight, I will be tired tomorrow. If I'm tired, I will fall asleep in class. If I fall asleep in class, the teacher will get angry. If the teacher gets angry, she will give us a surprise test. If she gives us a test, I will fail. Moral: if I sleep tonight, I won't fail."],
+  ["What would you do if…? Contestá 3: …you won the lottery? …you could live in a videogame? …you were the president?","If I won the lottery, I would open my own game studio. If I could live in a videogame, I would live in Zelda, because the world is beautiful. If I were the president, I would invest more money in education."],
+  ["Narrativa ramificada: describí 2 caminos de tu juego con el 2nd conditional.","If the player chose the forest, he would find dangerous creatures, but also a hidden sword. If he chose the city, he would talk to friendly NPCs and discover clues about the main mystery."]]}]}
+};
+const TABS=['1 · Questions','2 · Present','3 · Past','4 · Future','5 · Pres. perfect','6 · Money','7 · Modals','8 · Conditionals'];
+
+/* ================= ESTADO ================= */
+const LK='ingles2-u1',DOC='progress/u1';
+const mig=o=>{const r={};for(const k in o)r[/^[a-z]/.test(k)?'1'+k:k]=o[k];return r};
+let saved={};try{saved=mig(JSON.parse(localStorage.getItem(LK)||'{}'))}catch(e){}
+let cur=UNITS[saved._u]?+saved._u:1;
+const save=()=>{try{localStorage.setItem(LK,JSON.stringify(saved))}catch(e){};sched()};
+
+const CONTR={"what's":"what is","where's":"where is","who's":"who is","how's":"how is","it's":"it is","doesn't":"does not","don't":"do not","didn't":"did not","isn't":"is not","aren't":"are not","wasn't":"was not","weren't":"were not","they're":"they are","you're":"you are","we're":"we are","i'm":"i am","haven't":"have not","hasn't":"has not","wouldn't":"would not","i've":"i have","you've":"you have","we've":"we have","they've":"they have","i'd":"i would","you'd":"you would","we'd":"we would","they'd":"they would","he'd":"he would","she'd":"she would","it'd":"it would","i'll":"i will","you'll":"you will","we'll":"we will","they'll":"they will","it'll":"it will","he'll":"he will","she'll":"she will","won't":"will not","'ll":"will","'m":"am","'s":"is","'re":"are","he's":"he is","she's":"she is","can't":"cannot"};
+const norm=s=>{s=(s||'').toLowerCase().replace(/[’`´]/g,"'").replace(/[?¿.!,;:"]/g,' ').replace(/video game/g,'videogame').replace(/favorite/g,'favourite').replace(/\s+/g,' ').trim();
+  return s.split(' ').map(w=>CONTR[w]||w).join(' ')};
+const match=(v,acc)=>acc.some(a=>norm(a)===norm(v));
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+const strip=s=>s.replace(/<u>(.*?)<\/u>/g,'[$1]').replace(/<span.*?<\/span>/g,'').replace(/<[^>]+>/g,'').trim();
+const $=id=>document.getElementById(id);
+
+/* ================= RENDER ================= */
+const K=(s,i,x='')=>cur+s.id+i+x;
+const txt=(k,ph)=>`<input type="text" data-k="${k}" placeholder="${ph||'Escribí la pregunta…'}" autocomplete="off" spellcheck="false" value="${esc(saved[k]||'')}">`;
+const hsh=s=>{let h=7;for(const c of s)h=(h*31+c.charCodeAt(0))>>>0;return h};
+const chs=(k,opts,mix)=>{let ord=opts.map((_,j)=>j);if(mix){let h=hsh(k);h^=h>>>13;h=Math.imul(h,0x5bd1e995)>>>0;h=(h^(h>>>15))>>>0;const r=h%opts.length;ord=ord.slice(r).concat(ord.slice(0,r))}
+  return `<div class="ch" data-k="${k}">${ord.map(j=>`<button type="button" data-v="${j}" class="${saved[k]==j?'on':''}">${opts[j]}</button>`).join('')}</div>`};
+const item={
+ ci:(s,x,i)=>`<div class="q">${x[0]}</div>${chs(K(s,i,'c'),['Correcta','Incorrecta'])}<div class="fix" data-fx="${K(s,i,'c')}" ${saved[K(s,i,'c')]=='1'?'':'hidden'}>${txt(K(s,i,'t'),'Escribí la versión correcta…')}</div>`,
+ txt:(s,x,i)=>`<div class="q">${x[0]}</div>${txt(K(s,i),s.ph)}`,
+ mc:(s,x,i)=>`<div class="q">${x[0]}</div>${chs(K(s,i),x[1],s.mix)}`,
+ sel:(s,x,i)=>`<div class="inline"><select data-k="${K(s,i)}"><option value="">elegí…</option>${s.opts.map(a=>`<option ${saved[K(s,i)]===a?'selected':''}>${a}</option>`).join('')}</select><span>${x[0]}</span></div>`};
+const render=()=>{const U=UNITS[cur];
+  $('ttl').textContent=U.title;$('tip').innerHTML=U.tip;$('nt').textContent=U.note;
+  $('tabs').innerHTML=TABS.map((t,i)=>`<button role="tab" data-u="${i+1}" aria-selected="${i+1===cur}" ${UNITS[i+1]?'':'disabled title="Próximamente"'}>${t}</button>`).join('');
+  $('app').innerHTML=U.secs.map(s=>`<section id="s-${s.id}"><h2>${s.title}</h2><p class="ins">${s.ins}</p>`+
+   (s.t==='oral'?s.items.map(x=>`<div class="card"><b>${x[0]}</b><details><summary>Ver ejemplo</summary>${x[1]}</details></div>`).join(''):
+   `<ol>${s.items.map((x,i)=>`<li>${item[s.t](s,x,i)}<div class="fb" id="fb-${s.id}${i}"></div></li>`).join('')}</ol><div class="acts"><button class="btn" data-g="${s.id}">Corregir</button><button class="btn ghost" data-r="${s.id}">Borrar</button><span class="score" id="sc-${s.id}"></span></div>`)+`</section>`).join('');
+  hud()};
+
+/* ================= CORRECCIÓN ================= */
+const pts={};
+const gradable=()=>UNITS[cur].secs.filter(s=>s.t!=='oral');
+const hud=()=>{let got=0,all=0;gradable().forEach(s=>{all+=s.items.length;got+=pts[cur+s.id]||0});
+  $('xp').textContent=`XP ${got} / ${all}`;$('xpb').style.width=(all?got/all*100:0)+'%'};
+const check=(s,x,i)=>{
+  if(s.t==='ci'){const c=saved[K(s,i,'c')],t=saved[K(s,i,'t')];
+    if(x[1])return[c==0,'Esta estaba bien.'];
+    return[c==1&&match(t,[x[2]].concat(x[3]||[])),(c==1?'Corrección: ':'Está mal → ')+'<b>'+x[2]+'</b>']}
+  if(s.t==='txt')return[match(saved[K(s,i)],x[1]),'Respuesta: <b>'+x[1][0]+'</b>'];
+  if(s.t==='mc')return[saved[K(s,i)]==x[2],'Era: <b>'+x[1][x[2]]+'</b>'];
+  if(s.t==='sel')return[saved[K(s,i)]===x[1],x[2]||'Era: <b>'+x[1]+'</b>']};
+const grade=s=>{let n=0;s.items.forEach((x,i)=>{const[ok,msg]=check(s,x,i);const el=$('fb-'+s.id+i);el.className='fb '+(ok?'ok':'bad');el.innerHTML=ok?'✓ ¡Bien!':'✗ '+msg;n+=ok?1:0});
+  pts[cur+s.id]=n;$('sc-'+s.id).textContent=`${n} / ${s.items.length}`;hud()};
+
+/* ================= EVENTOS ================= */
+const onVal=ev=>{const k=ev.target.dataset.k;if(k&&!ev.target.closest('.ch')){saved[k]=ev.target.value;save()}};
+$('app').addEventListener('input',onVal);$('app').addEventListener('change',onVal);
+$('app').addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;
+  const grp=b.parentElement.dataset.k;
+  if(grp){saved[grp]=b.dataset.v;save();[...b.parentElement.children].forEach(x=>x.classList.toggle('on',x===b));
+    const fx=document.querySelector(`[data-fx="${grp}"]`);if(fx)fx.hidden=b.dataset.v!=='1';return}
+  const s=UNITS[cur].secs.find(z=>z.id===(b.dataset.g||b.dataset.r));if(!s)return;
+  if(b.dataset.g)return grade(s);
+  Object.keys(saved).forEach(k=>{if(k.startsWith(cur+s.id))delete saved[k]});save();delete pts[cur+s.id];render()});
+$('tabs').addEventListener('click',ev=>{const b=ev.target.closest('button[data-u]');if(!b||b.disabled)return;
+  cur=+b.dataset.u;saved._u=cur;save();render();scrollTo({top:0})});
+
+/* ================= GUARDADO EN LA NUBE ================= */
+let db=null,tm=null,busy=false,dirty=false;
+const st=t=>{$('st').textContent=t};
+const ref=()=>db.doc(DOC);
+async function push(){if(!db)return;if(busy){dirty=true;return}busy=true;
+  try{await ref().set({saved,at:Date.now()});st('✓ Guardado')}catch(e){st('⚠ No se pudo guardar')}
+  busy=false;if(dirty){dirty=false;push()}}
+function sched(){if(!db)return;st('Guardando…');clearTimeout(tm);tm=setTimeout(push,700)}
+
+render();
+(async()=>{
+  const to=setTimeout(()=>{if(!db)st('Sin conexión: guardado solo en este navegador')},10000);
+  try{db=window.claude&&window.claude.use?await window.claude.use('db'):null}catch(e){db=null}
+  if(!db){clearTimeout(to);st('✓ Progreso guardado en este navegador');return}
+  try{const s=await ref().get();clearTimeout(to);
+    const d=s&&typeof s.data==='function'?s.data():(s&&s.data!==undefined?s.data:s);
+    if(d&&d.saved&&Object.keys(d.saved).length){saved=Object.assign({},saved,mig(d.saved));if(UNITS[saved._u])cur=+saved._u;
+      try{localStorage.setItem(LK,JSON.stringify(saved))}catch(e){};render();st('✓ Progreso cargado');push()}
+    else{st('✓ Guardado en la nube activo');if(Object.keys(saved).length)push()}
+  }catch(e){clearTimeout(to);st('✓ Guardado en la nube activo');if(Object.keys(saved).length)push()}
+})();
+}
+</script>
+</body>
+</html>
